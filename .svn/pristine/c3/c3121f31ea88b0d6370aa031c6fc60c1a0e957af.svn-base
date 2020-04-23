@@ -1,0 +1,286 @@
+
+$(document).ready(function(){
+  searchArr = [];
+  createPieChartJS();
+  getAllTaskList();
+});
+
+
+function createPieChartJS(){
+  $("#chartloading").addClass('show');
+  $.ajax({
+  url: './piechart',
+  method: 'post',
+  success: function(response) {
+      var res = JSON.parse(response);
+      $("#chartloading").hide();
+      // console  .log(res.result);return false;
+            if (res.st === parseInt(1)) {
+
+              // console.log(res.result.Labels);return false;
+
+        let myChart =document.getElementById('mychart').getContext('2d');
+        let massPopChart = new Chart(myChart,{
+        type: 'doughnut',
+          data: {
+              datasets: [{
+                  data: res.result.Values,
+                  backgroundColor: [
+                    '#ed9f33',
+                    '#32a8ff',
+                    '#ff264f',
+                    '#000',
+                    '#21521f',
+                    '#0024ff',
+                  ],
+                  borderWidth: 0,
+                  hoverBorderWidth:0,
+                  label: 'Dataset 1'
+              }],
+              labels: res.result.Labels,
+          },
+          options: {
+              responsive: true,
+              legend: {
+                  position: 'bottom', 
+                  align: "start",
+                  labels: {
+                      fontColor: '#fff',
+                      boxWidth: 25,
+                      boxHeight: 30,
+                      padding: 20
+                  }
+              },
+              animation: {
+                  animateScale: true,
+                  animateRotate: true
+              }
+          }
+        })
+
+            }
+      }
+    });
+}
+// var table = null;
+function getAllTaskList(){
+
+  // if(table != null) {
+  //   table.destroy();
+  // }
+
+  // var searchArr = [];
+  $("#tableloading").addClass('show');
+      var html = "";
+      var filter_data = $('#filter_id').val();
+      $.ajax({
+      url: './list-of-task',
+      method: 'post',
+      data: "filter_data="+filter_data,
+      success: function(response) {
+        // console.log(response);return false;
+          $("#tableloading").removeClass('show');
+            var res = JSON.parse(response);
+            if(res.st===parseInt(1)){
+              var spanclass='';
+              html += `<table id="myTable" class="table display " cellspacing="0" width="100%" style="width:100%" >
+                <thead>
+                <tr>
+                  <th><input type="checkbox" name="selectAll" id="ckbCheckAll"></th>
+                  <th>Task Name</th>
+                  <th>Name</th>
+                  <th>Start Date</th>
+                  <th>Delivery Date</th>
+                  <th>Price</th>
+                  <th>Task Status</th>
+                </tr>
+            </thead>
+            <span id="tableloading"></span>
+            <tbody id="task_list">
+            `;
+              $(res.task_list.records).each(function(key,value){
+              if(value.PO_Status__c=='Pending'){
+                spanclass ='pending status';
+                 $("#reject_status_btn").show();
+                 $("#accept_status_btn").show();
+              }
+              else if(value.PO_Status__c=='Started'){
+              spanclass ='inprogress status';
+                $("#accept_status_btn").hide();
+                $("#reject_status_btn").hide();
+              }
+              else if(value.PO_Status__c=='Review'){
+              spanclass ='review status';
+               $("#reject_status_btn").hide();
+               $("#accept_status_btn").hide();
+              }
+              else if(value.PO_Status__c=='Completed'){
+              spanclass ='done status';
+               $("#reject_status_btn").hide();
+               $("#accept_status_btn").hide();
+              }
+              else if(value.PO_Status__c=='Rejected'){
+              spanclass ='reject status';
+               $("#reject_status_btn").hide();
+               $("#accept_status_btn").show();
+              }
+              else if(value.PO_Status__c=='Change Request'){
+              spanclass ='change status';
+              $("#reject_status_btn").hide();
+              $("#accept_status_btn").hide();
+              }
+
+            html +="<tr>"+
+            "<td><input type='checkbox' name ='status' id='"+value.Id+"' class='checkBoxClass' value='"+value.Id+"' onclick='enablebutton(this.id);'>"+"</td>"+
+            "<td id='"+value.Name+"'> <a href='./task/"+value.Id+"' >"+value.Name+ "</a></td>"+
+            "<td>"+value.Name__c+ "</td>"+
+            "<td>"+value.StartDate__c+ "</td>"+
+            "<td>"+value.OrderDate__c+ "</td>"+
+            "<td>"+value.PricePerWord__c+ "</td>"+
+            "<td><span class='"+spanclass+"'>"+value.PO_Status__c+ "</span></td></tr>";
+
+            
+            searchArr.push(value.Name);
+            // console.log(searchArr);
+            });
+            html+=`</tbody></table>`;
+            $("#div_outer_table").html(html); 
+            }
+          $('#myTable').DataTable({
+              "destroy":false,
+               "info": false,
+               "searching": false,
+               "lengthChange": false,
+               "ordering": false,
+               "pageLength": 10,
+               "language": {
+                   "paginate": {
+                     "previous": "<",
+                     "next" : ">"
+                   }
+                 }
+               }); 
+          $(".head_btn").addClass('disabled'); 
+          $("#ckbCheckAll").click(function () {
+            $(".checkBoxClass").prop('checked', $(this).prop('checked'));
+            if ($(this).is(':checked')) {
+              $(".head_btn").removeClass('disabled');
+            } else {
+              $(".head_btn").addClass('disabled');
+            }
+          });
+          $(".checkBoxClass").change(function(){
+            if (!$(this).prop("checked")){
+              $("#ckbCheckAll").prop("checked",false);
+            }
+          });
+          }
+    });
+}
+
+//profile DATA 
+function profileData(){
+  $.ajax({
+  url: './profileData',
+  method: 'post',
+  success: function(response) {
+      var res = JSON.parse(response);
+            if (res.st === parseInt(1)) {
+               $(res.profile_data.records).each(function(key,value){
+                $('#name').text(value.Name);
+                $('#phone').text(value.Phone);
+                $('#mobile').text(value.MobilePhone);
+                $('#account_name').text(value.Account.Name);
+                $('#l_url').text(value.Linkedin_URL__c);
+                $('#t_url').text(value.Twitter_Name__c);
+                $('#comm').text(value.Communication_Language__c);
+                $('#m_address').text(value.MailingAddress.street + value.MailingAddress.city + value.MailingAddress.state + value.MailingAddress.country + value.MailingAddress.postalCode);
+               }); 
+            }
+          }
+        });
+}
+
+
+
+$("#accept_status_btn").click(function(){
+  if($(this).attr("class")=='btn head_btn accpt disabled'){
+    $('#btn_click_without_select').text('Please Select Atleast One Task');
+    $("#btn_click_without_select").css("display", "block");
+    $("#btn_click_without_select").delay(1000).fadeOut();
+  } else {
+      var fd = new FormData()
+      $("input:checkbox[name=status]:checked").each(function () {
+      fd.append('task_id[]',$(this).val());
+     }); 
+  $.ajax({
+  url: base_url+'acceptDashboardStatus',
+  method: 'post',
+  dataType: 'JSON',
+  data: fd,
+  contentType: false,
+  processData: false,
+  success: function(response) {
+     if(response.st===parseInt(1)){
+             getAllTaskList();
+           }
+         }
+      });
+  }
+});
+
+$(function(){
+  // var availableTags = [{label : 'prateek', value : 'Prateek'}, {label : "Name", value : 'Narayan'}];
+
+  $( "#search_input_data" ).autocomplete({
+    source    : searchArr,
+    position: {  my: "right bottom", at: "right top", collision: "flip"  },
+    // source    : availableTags,
+    select: function(event, ui) {
+      doSearch(ui.item.label, ui.item.city);
+    }
+  });
+})
+
+function doSearch(term, location) {
+  // console.log(term);
+  var location = $("#"+term).children('a').attr("href").split("/");
+  // var loc = location.split("/")
+  // console.log(location);return false;
+  window.location.href = 'http://localhost/supplier_portal/task/'+location[2];
+}
+
+$("#reject_status_btn").click(function(){
+  if($(this).attr("class")=='btn head_btn reject disabled'){
+    $('#btn_click_without_select').text('Please Select Atleast One Task');
+    $("#btn_click_without_select").css("display", "block");
+    $("#btn_click_without_select").delay(1000).fadeOut();
+  } else {
+    var fd = new FormData()
+    $("input:checkbox[name=status]:checked").each(function () {
+    fd.append('task_id[]',$(this).val());
+    });
+  $.ajax({
+  url: base_url+'rejectDashboardStatus',
+  method: 'post',
+  data: fd,
+  contentType: false,
+  processData: false,
+  success: function(response) {
+    var res = JSON.parse(response);
+     if(res.st===parseInt(1)){
+       getAllTaskList();
+           }
+         }
+      });
+  }
+});
+
+
+function enablebutton(id){
+  if($('#' + id).is(":checked") || $('.checkBoxClass').is(":checked")){
+    $(".head_btn").removeClass('disabled');
+  } else{
+    $(".head_btn").addClass('disabled');
+  }      
+}

@@ -1,0 +1,433 @@
+
+<!--breadcrumb-->
+<div style="background: #f5f5f5;position: relative;">
+	<div id="status_change_outer">
+      	<span id="status_change"></span>
+    </div>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-12 col-sm-12 col-md-12 col-lg-12">
+				<nav aria-label="breadcrumb">
+				  <ol class="breadcrumb">
+				    <li class="breadcrumb-item" aria-current="page"> <a href="<?php echo base_url().'dashboard';?>"><i class="fa fa-home" aria-hidden="true"></i></a></li>
+				    <li class="breadcrumb-item active" aria-current="page"> <a href="javascript:;"><?php if(!empty($task_detail->records[0]->Name)){ echo $task_detail->records[0]->Name__c; } ?></a></li>
+				  </ol>
+				</nav>
+			</div>
+		</div>
+		<!-- upper div start-->
+		<div class="row">
+			<div class="col-12 col-md-12 col-lg-12 col-sm-12">
+				<div class="detail_inner">
+					<div class="buttons">
+						<button type="button" class="btn upr_btn accept btn_status" id="accept_task_status" value="accept">Accept</button>
+						<button type="button" class="btn upr_btn reject btn_status" id="reject_task_status"  value="reject">Reject</button>
+
+						<!-- <button type="button" class="btn  upr_btn submit" id="submit_for_task_status" <?php if(isset($task_detail->records[0]->TaskRay_Tasks__r->records[0]->No_of_InComplete_Tasks__c)) { if($task_detail->records[0]->TaskRay_Tasks__r->records[0]->No_of_InComplete_Tasks__c != 0){ echo 'disabled';} } else if($task_detail->records[0]->TaskRay_Tasks__r==null){ echo 'disabled';} ?>>Submit</button> -->
+						<button type="button" class="btn  upr_btn submit" id="submit_for_task_status">Submit</button>
+
+					</div>
+					<div class="row pt40">
+						<div class="col-6 col-md-6 col-lg-3">
+							<div class="form-group">
+							    <label class="light">Task Name</label>
+							    <p class="output"><?php if(!empty($task_detail->records[0]->Name)){ echo $task_detail->records[0]->Name; }?></p>
+							</div>
+						</div>
+						<div class="col-6 col-md-6 col-lg-3">
+							<div class="form-group">
+							    <label class="light">Start Date</label>
+							    <p class="output"><?php if(!empty($task_detail->records[0]->StartDate__c)){ echo $task_detail->records[0]->StartDate__c ;} ?></p>
+							</div>
+						</div>
+						<div class="col-6 col-md-6 col-lg-3">
+							<div class="form-group">
+							    <label class="light">Delivery Date</label>
+							    <p class="output"><?php if(!empty($task_detail->records[0]->OrderDate__c)) { echo $task_detail->records[0]->OrderDate__c; } ?></p>
+							</div>
+						</div>
+
+						<!-- for button disable start -->
+						<input id="statusdetail"  value="<?php if(!empty($task_detail->records[0]->OrderDate__c)) { echo $task_detail->records[0]->PO_Status__c; } ?>" style="display: none;">
+					    <!-- for button disable start -->
+					    
+						<div class="col-6 col-md-6 col-lg-3">
+							<div class="form-group" >
+							    <label class="light">Task Staus</label>
+							    <?php if($task_detail->records[0]->PO_Status__c=='Pending'){?>
+							    <p class="output task pending submit-res pending"><?php if(!empty($task_detail->records[0]->PO_Status__c)){ echo $task_detail->records[0]->PO_Status__c; }?></p>
+							<?php } elseif($task_detail->records[0]->PO_Status__c=='Started') {?>
+							<p class="output task status submit-res inprogress"><?php if(!empty($task_detail->records[0]->PO_Status__c)) { echo $task_detail->records[0]->PO_Status__c; }?></p>
+								<?php } elseif($task_detail->records[0]->PO_Status__c=='Review') { ?>
+								<p class="output task review submit-res review"><?php if(!empty($task_detail->records[0]->PO_Status__c)){echo $task_detail->records[0]->PO_Status__c; } ?></p>
+								<?php } elseif($task_detail->records[0]->PO_Status__c=='Completed'){?>
+								<p class="output task done submit-res done"><?php if(!empty($task_detail->records[0])) { echo $task_detail->records[0]->PO_Status__c; } ?></p>
+								<?php } elseif($task_detail->records[0]->PO_Status__c=='Rejected'){?>
+								<p class="output task reject submit-res reject"><?php if(!empty($task_detail->records[0]->PO_Status__c)) {echo $task_detail->records[0]->PO_Status__c; } ?></p>
+								<?php } elseif($task_detail->records[0]->PO_Status__c=='Change Request'){?>
+								<p class="output task change status submit-res change"><?php if(!empty($task_detail->records[0]->PO_Status__c)) { echo $task_detail->records[0]->PO_Status__c; }?></p>
+								<?php } ?>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- upper div end-->
+
+		<!-- deatils tab section start -->
+		<div class="row mt-5">
+			<div class="col-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="tabs_view">
+					<!-- tabs -->
+					<nav>
+						<?php 
+							if($task_detail->records[0]->PO_Status__c == 'Pending' || $task_detail->records[0]->PO_Status__c == 'Rejected'){
+								?>
+									<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+										<a class="nav-item nav-link active" id="nav-details-tab" data-toggle="tab" href="#nav-details" role="tab" aria-controls="nav-details" aria-selected="true" disabled="disabled">Details</a>
+										<span class="tool-tip" data-toggle="tooltip" data-placement="bottom" title="You Can't Access This Tab">
+										<a class="nav-item nav-link disabled" id="nav-qa-tab" data-toggle="tab" href="#nav-qa" role="tab" aria-controls="nav-qa" aria-selected="false">Questions & Answers
+										 </a>
+										</span>
+										<span class="tool-tip" data-toggle="tooltip" data-placement="bottom" title="You Can't Access This Tab" >
+											<a class="nav-item nav-link disabled" id="nav-task-tab" data-toggle="tab" href="#nav-task" role="tab" aria-controls="nav-task" aria-selected="false">Submit Deliverable</a>
+										</span>
+										<span class="tool-tip" data-toggle="tooltip" data-placement="bottom" title="You Can't Access This Tab" >
+											<a class="nav-item nav-link disabled" id="nav-change-tab" data-toggle="tab" href="#nav-change" role="tab" aria-controls="nav-change" aria-selected="false">Change Request</a>
+										</span>
+										<span class="tool-tip" data-toggle="tooltip" data-placement="bottom" title="You Can't Access This Tab" >
+											<a class="nav-item nav-link disabled" id="nav-payment-tab" data-toggle="tab" href="#nav-payment" role="tab" aria-controls="nav-payment" aria-selected="false">Payment</a>
+										</span>
+									</div>
+								<?php
+							} else if($task_detail->records[0]->PO_Status__c == 'Started'){
+								?>
+									<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+										<a class="nav-item nav-link " id="nav-details-tab" data-toggle="tab" href="#nav-details" role="tab" aria-controls="nav-details" aria-selected="true">Details</a>
+										<a class="nav-item nav-link active" id="nav-qa-tab" data-toggle="tab" href="#nav-qa" role="tab" aria-controls="nav-qa" onclick="showQuestionAnswerData();" aria-selected="false">Questions & Answers</a>
+										<a class="nav-item nav-link" id="nav-task-tab" data-toggle="tab" href="#nav-task" role="tab" aria-controls="nav-task" aria-selected="false" onclick="showSubmitTaskDeliverableData();">Submit  Deliverable</a>
+										<span class="tool-tip" data-toggle="tooltip" title="You Can't Access This Tab">
+											<a class="nav-item nav-link disabled" id="nav-change-tab" data-toggle="tab" href="#nav-change" role="tab" aria-controls="nav-change" aria-selected="false">Change Request</a>
+										</span>
+										<span class="tool-tip" data-toggle="tooltip" title="You Can't Access This Tab">
+											<a class="nav-item nav-link disabled" id="nav-payment-tab" data-toggle="tab" href="#nav-payment" role="tab" aria-controls="nav-payment" aria-selected="false">Payment</a>
+										</span>
+									</div>
+								<?php
+							} else if($task_detail->records[0]->PO_Status__c == 'Review'){
+								?>
+									<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+										<a class="nav-item nav-link" id="nav-details-tab" data-toggle="tab" href="#nav-details" role="tab" aria-controls="nav-details" aria-selected="true">Details</a>
+										<a class="nav-item nav-link" id="nav-qa-tab" data-toggle="tab" href="#nav-qa" role="tab" aria-controls="nav-qa" onclick="showQuestionAnswerData();" aria-selected="false">Questions & Answers</a>
+										<a class="nav-item nav-link active" id="nav-task-tab" data-toggle="tab" href="#nav-task" role="tab" aria-controls="nav-task" aria-selected="false" onclick="showSubmitTaskDeliverableData();">Submit  Deliverable</a>
+										<span class="tool-tip" data-toggle="tooltip" title="You Can't Access This Tab">
+										<a class="nav-item nav-link disabled" id="nav-change-tab" data-toggle="tab" href="#nav-change" role="tab" aria-controls="nav-change" aria-selected="false">Change Request</a>
+										</span>
+										<span class="tool-tip" data-toggle="tooltip" title="You Can't Access This Tab">
+											<a class="nav-item nav-link disabled" id="nav-payment-tab" data-toggle="tab" href="#nav-payment" role="tab" aria-controls="nav-payment" aria-selected="false">Payment</a>
+										</span>
+									</div>
+								<?php
+							} else if($task_detail->records[0]->PO_Status__c == 'Change Request'){
+								?>
+									<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+										<a class="nav-item nav-link" id="nav-details-tab" data-toggle="tab" href="#nav-details" role="tab" aria-controls="nav-details" aria-selected="true">Details</a>
+										<a class="nav-item nav-link" id="nav-qa-tab" data-toggle="tab" href="#nav-qa" role="tab" aria-controls="nav-qa" onclick="showQuestionAnswerData();" aria-selected="false">Questions & Answers</a>
+										<a class="nav-item nav-link" id="nav-task-tab" data-toggle="tab" href="#nav-task" role="tab" aria-controls="nav-task" aria-selected="false" onclick="showSubmitTaskDeliverableData();">Submit  Deliverable</a>
+										<a class="nav-item nav-link active" id="nav-change-tab" data-toggle="tab" href="#nav-change" role="tab" aria-controls="nav-change" onclick="showChangeRequestData();" aria-selected="false">Change Request</a>
+										<span class="tool-tip" data-toggle="tooltip" title="You Can't Access This Tab">
+											<a class="nav-item nav-link disabled" id="nav-payment-tab" data-toggle="tab" href="#nav-payment" role="tab" aria-controls="nav-payment" aria-selected="false">Payment</a>
+										</span>
+									</div>
+								<?php
+							} else {
+								?>
+									<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+										<a class="nav-item nav-link" id="nav-details-tab" data-toggle="tab" href="#nav-details" role="tab" aria-controls="nav-details" aria-selected="true">Details</a>
+										<a class="nav-item nav-link" id="nav-qa-tab" data-toggle="tab" href="#nav-qa" role="tab" aria-controls="nav-qa" onclick="showQuestionAnswerData();" aria-selected="false">Questions & Answers</a>
+										<a class="nav-item nav-link" id="nav-task-tab" data-toggle="tab" href="#nav-task" role="tab" aria-controls="nav-task" aria-selected="false" onclick="showSubmitTaskDeliverableData();">Submit  Deliverable</a>
+										<a class="nav-item nav-link" id="nav-change-tab" data-toggle="tab" href="#nav-change" role="tab" aria-controls="nav-change" onclick="showChangeRequestData();" aria-selected="false">Change Request</a>
+										<a class="nav-item nav-link active" id="nav-payment-tab" data-toggle="tab" href="#nav-payment" role="tab" aria-controls="nav-payment" aria-selected="false">Payment</a>
+									</div>
+								<?php
+							}
+						?>
+					</nav>
+
+					<div class="tab-content" id="nav-tabContent">
+						<div class="tab-pane fade" id="nav-details" role="tabpanel" aria-labelledby="nav-details-tab">
+							<div class="row">
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Sales Order</label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->Sales_Order_Name__c)) { echo $task_detail->records[0]->Sales_Order_Name__c ; } ?></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Additional Info</label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->AdditionalInfo_For__c)) { echo $task_detail->records[0]->AdditionalInfo_For__c; } ?></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Derogating Provision</label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->Derogating_Provision__c)) { echo $task_detail->records[0]->Derogating_Provision__c; } ?></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Price Per Word</label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->PricePerWord__c)) { echo $task_detail->records[0]->PricePerWord__c; } ?></p>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Total Words</label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->TotalWords__c)) { echo $task_detail->records[0]->TotalWords__c; }?></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Purchase Order Type</label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->PurchaseOrderType__c)) { echo $task_detail->records[0]->PurchaseOrderType__c; } ?></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Amount Paid </label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->AmountPaid__c)) { echo $task_detail->records[0]->AmountPaid__c; }?></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Grand Total</label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->GrandTotal__c)) { echo $task_detail->records[0]->GrandTotal__c; } ?></p>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Tax(VAT)</label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->TaxVAT__c)) { echo $task_detail->records[0]->TaxVAT__c; }?></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Created By</label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->CreatedBy->Name)) { echo $task_detail->records[0]->CreatedBy->Name; } ?></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Supplier</label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->Supplier_Contact__r->Name)) { echo $task_detail->records[0]->Supplier_Contact__r->Name; } ?></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Project Manager</label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->Project_ManagerContact__r->Name)) { echo $task_detail->records[0]->Project_ManagerContact__r->Name; } ?></p>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Purchase Service Name</label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->PurchaseServiceName_For__c)) { echo $task_detail->records[0]->PurchaseServiceName_For__c; } ?></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Sales Service Name</label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->SalesServiceName__c)) { echo $task_detail->records[0]->SalesServiceName__c; } ?></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Last modified by</label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->LastModifiedBy->Name)) { echo $task_detail->records[0]->LastModifiedBy->Name; } ?></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Terms & conditions </label>
+									    <p class="output"><?php if(!empty($task_detail->records[0]->Terms_and_Conditions__c)) { echo $task_detail->records[0]->Terms_and_Conditions__c; }?></p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="tab-pane fade" id="nav-qa" role="tabpanel" aria-labelledby="nav-qa-tab">
+							<span id="QA_loading"></span>
+							<div class="row">
+								<div class="col-3 col-sm-3 col-md-3 col-lg-3 text-center text-lg-left text-md-left">
+									<div class="que_button mb-5" id="show_message">
+									</div>
+								</div>
+								<div class="col-9 col-sm-9 col-md-9 col-lg-9 text-center text-lg-right text-md-right">
+									<div class="que_button mb-5">
+										<button type="button" class="btn qa_btn" id="collase_all">Fold/Unfold All</button>
+										<button type="button" class="btn qa_btn" id="saveQuestionData">Save only</button>
+										<button type="button" class="btn qa_btn" id="saveNotifyQuestionData">Save & Notify</button>
+									</div>
+								</div>
+							</div>
+							<div id="accordion" class="questions_acc">
+								<div id="question_answer_tab"></div>
+							</div>
+						</div>
+
+						<div class="tab-pane fade" id="nav-task" role="tabpanel" aria-labelledby="nav-task-tab">
+							<span id="submitaskloading"></span>
+							<span id="tasksubmitloading"></span>
+							<form method="post"  id=myForm>
+								<div class="row" id="submit-task"></div>
+								<div class="row text-center">
+									<span id="up_sub_t" style="z-index: 1;"></span>		
+								</div>	
+								
+								<div class="row">
+									<div class="col-12 col-sm-12 col-md-12 col-lg-12 text-center mt-5 ">
+										<div id="sheet_link"></div>
+									</div>
+									<div class="col-12 col-sm-12 col-md-12 col-lg-12 text-center mt-3 ">
+										<div class="form-check">
+										  <label class="form-check-label" id="task_del_checkbox"style="display: none;">
+
+										    <input type="checkbox" class="form-check-input" value="" id="mandatory_checkbox" <?php if(!empty($task_detail->records[0]->PO_Status__c) && $task_detail->records[0]->PO_Status__c=='Review' ){ echo 'checked disabled'; }?>>* I have checked all points & uploaded deliverable for review
+										  </label>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+
+						<div class="tab-pane fade" id="nav-change" role="tabpanel" aria-labelledby="nav-change-tab">
+							<div id="demo" class="carousel slide" data-ride="carousel" data-interval="false">
+								<div id="get_change_request"></div>
+							</div>
+						</div>
+
+						<div class="tab-pane fade" id="nav-payment" role="tabpanel" aria-labelledby="nav-payment-tab">
+							<span id="paymentloading"></span>	
+							<div class="row ">
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">PO Payment Name</label>
+									    <p class="output" id="payname"></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Amount</label>
+									    <p class="output" id="amount"></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Status</label>
+									    <p class="output" id="status"></p>
+									</div>
+								</div>
+								<div class="col-6 col-md-4 col-lg-3">
+									<div class="form-group">
+									    <label class="light">Grand Total</label>
+									    <p class="output" id="total"></p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- deatils tab section ends -->
+	</div>
+</div>
+
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+
+		var myvar = $('#statusdetail').val();
+		// alert(myvar); return false;
+		if (myvar === 'Pending') {
+			$('#submit_for_task_status').attr("disabled", true);
+			$('#submit_for_task_status').addClass('disabled');
+		} else if (myvar === 'Rejected') {
+			$('#reject_task_status').attr("disabled", true);
+			$('#reject_task_status').addClass('disabled');
+			$('#accept_task_status').attr("disabled", true);
+			$('#accept_task_status').addClass('disabled');
+			$('#submit_for_task_status').attr("disabled", true);
+			$('#submit_for_task_status').addClass('disabled');
+		} else {
+			$('#reject_task_status').attr("disabled", true);
+			$('#accept_task_status').attr("disabled", true);
+			$('#accept_task_status').addClass('disabled');
+			$('#reject_task_status').addClass('disabled');
+		}
+
+		$('[data-toggle="tooltip"]').tooltip(
+			{ position: { my: "left center", at: "top right" } }
+		);
+		
+		$(function(){
+			var active = true;
+			$("#collase_all").click(function(){
+				if(active){
+					active = false;
+					$('#accordion .collapse').addClass('show');
+				}
+				else{
+					active = true;
+            		$('#accordion .collapse').removeClass('show');
+				}
+			})	
+		});
+
+		$('#accordion').on('.collapse', function () {
+	        if (active) {
+        		$('#accordion .collapse').removeClass('show');
+    		}
+	    });
+
+	    var task_status = '<?php echo $task_detail->records[0]->PO_Status__c; ?>';
+
+	    if(task_status == 'Pending' || task_status == 'Rejected'){
+	    	$("#nav-details").addClass('show active');
+	    } else if(task_status == 'Started'){
+	    	showQuestionAnswerData();
+	    	$("#nav-qa").addClass('show active');
+	    	$("#nav-details").removeClass('show active');
+	    } else if(task_status == 'Review'){
+	    	showSubmitTaskDeliverableData();
+	    	$("#nav-task").addClass('show active');
+	    	$("#nav-qa").removeClass('show active');
+	    	$("#nav-details").removeClass('show active');
+	    } else if(task_status == 'Change Request'){
+	    	showChangeRequestData();
+	    	$("#nav-change").addClass('show active');
+	    	$("#nav-task").removeClass('show active');
+	    	$("#nav-qa").removeClass('show active');
+	    	$("#nav-details").removeClass('show active');
+	    } else {
+	    	showPaymentData();
+	    	$("#nav-payment").addClass('show active');
+	    	$("#nav-change").removeClass('show active');
+	    	$("#nav-task").removeClass('show active');
+	    	$("#nav-qa").removeClass('show active');
+	    	$("#nav-details").removeClass('show active');
+	    }
+	});
+	var task_id = '<?php echo $task_id;?>';
+</script>
+
+<script src="<?php echo base_url(); ?>assets/js/task.js"></script>
+ <script src="<?php echo base_url(); ?>assets/js/profile.js"></script>

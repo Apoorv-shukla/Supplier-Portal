@@ -1,0 +1,165 @@
+// Payment detail api
+
+// function paymentData(){ 
+//   data: "task_id="+task_id,
+  // $.ajax({
+  // url: './paymentDetail',
+  // method: 'post',
+  // success: function(response) {
+  //   var res = JSON.parse(response);
+
+  //   console.log(res.payment_data);return false;
+  //   if(res.st===parseInt(1)){
+  //     $(res.payment_data.records).each(function(key,value){
+
+  //               $('#payname').text(value.Name);
+  //               $('#amount').text(value.Amount__c);
+  //               $('#status').text(value.Status__c);
+  //               $('#total').text(value.GrandTotal__c);
+                
+  //             });
+  //           }
+  //        }
+  //     });
+//   }
+
+
+
+$("#nav-payment-tab").click(function(){
+   $("#paymentloading").addClass('show');
+  $.ajax({
+  url: './paymentDetail/'+task_id,
+  method: 'post',
+  success: function(response) {
+    var res = JSON.parse(response);
+    $("#paymentloading").hide();
+    if(res.st===parseInt(1)){
+      $(res.payment_data.records).each(function(key,value){
+
+                $('#payname').text(value.Name);
+                $('#amount').text(value.Amount__c);
+                $('#status').text(value.Status__c);
+                $('#total').text(value.GrandTotal__c);
+                
+              });
+            }
+         }
+      });
+})
+
+
+$("#nav-task-tab").click(function(){
+   $("#submitaskloading").addClass('show');
+  var html = "";
+  $.ajax({
+  url: base_url+'/submitTaskDeliverable',
+  method: 'post',
+  success: function(response) {
+    var res = JSON.parse(response);
+    $("#submitaskloading").hide();
+    if(res.st===parseInt(1)){
+    $(res.submitTaskDeliverable.records[0].TASKRAY__TaskRay_Checklist_Items__r.records).each(function(key,value){
+      //console.log(value.Name); return false;
+      if(value.TASKRAY__Completed__c==true){ var status ='checked disabled'; var cla_ad = '' } else { var status = ''; var cla_ad = 'jai';}
+       html +='<div class="col-12 col-sm-12 col-md-6 col-lg-3"><div class="form-group form-check"><label><input type="checkbox" class="form-check-input '+cla_ad+'" name="myCheckboxes[]" id="'+value.Id+'" '+status+'  value="'+value.Id+'" style="margin-right:10px;"/>'+value.Name+'</label></div></div>';
+              });
+        $("#submit-task").html(html); 
+          }
+         }
+      });
+});
+
+
+function UpdateSubmitTaskDel(){
+  $("#submitaskloading").addClass('show');
+  if($('#mandatory_checkbox').is(':checked')){
+    var check_id = $("input:checkbox[class*=jai]:checked").map(function(){
+     return $(this).val();
+      }).get();
+
+  $.ajax({
+  url: base_url+'/updateSubmitTaskDeliverable',
+  method: 'post',
+  data:"check_id="+check_id,
+  success: function(response) {
+     var res = JSON.parse(response);
+     
+      $("#submitaskloading").hide();
+     if(res.submitTaskDeliverable.results[0]['statusCode'] === parseInt(204)){
+        $('#up_sub_t').html('Task submit successfully'); 
+        $('#up_sub_t').addClass('alert alert-success');
+        $('#up_sub_t').css({"width": "100%"}); 
+        $("#up_sub_t").delay(2000).fadeOut();  
+     } else{    
+         $('#up_sub_t').html('Something went wrong'); 
+        $('#up_sub_t').addClass('alert alert-danger');
+        $('#up_sub_t').css({"width": "100%"}); 
+        $("#up_sub_t").delay(2000).fadeOut();  
+      }
+         }
+      });
+
+  
+  }
+  else{
+    alert('Please checked checkbox I have checked all feedback  & uploaded the  updated deliverable for review');
+    return false;
+  }
+}
+
+
+$("#submit_for_task_status").click(function(){
+
+  $.ajax({
+  url: base_url+'submitTaskStatus',
+  method: 'post',
+   data: "task_id="+task_id,
+  success: function(response) {
+    var res = JSON.parse(response);
+     if(res.st===parseInt(1)){
+          $('.submit-res').html(res.submitTaskStatus);
+          $('.submit-res').removeClass('output task inprogress');
+          $('.submit-res').removeClass('output task reject');
+          $('.submit-res').addClass('output task review');
+
+           }
+         }
+      });
+});
+
+$("#accept_task_status").click(function(){
+  $.ajax({
+  url: base_url+'acceptTaskStatus',
+  method: 'post',
+   data: "task_id="+task_id,
+  success: function(response) {
+    var res = JSON.parse(response);
+     if(res.st===parseInt(1)){
+          $('.submit-res').html(res.acceptTaskStatus);
+          $('.submit-res').removeClass('output task review');
+          $('.submit-res').removeClass('output task reject');
+          $('.submit-res').addClass('output task inprogress');
+
+           }
+         }
+      });
+});
+
+
+$("#reject_task_status").click(function(){
+  $.ajax({
+  url: base_url+'rejectTaskStatus',
+  method: 'post',
+   data: "task_id="+task_id,
+  success: function(response) {
+    var res = JSON.parse(response);
+     if(res.st===parseInt(1)){
+          $('.submit-res').html(res.rejectTaskStatus);
+          $('.submit-res').removeClass('output task review');
+          $('.submit-res').removeClass('output task inprogress');
+          $('.submit-res').addClass('output task reject');
+
+           }
+         }
+      });
+});

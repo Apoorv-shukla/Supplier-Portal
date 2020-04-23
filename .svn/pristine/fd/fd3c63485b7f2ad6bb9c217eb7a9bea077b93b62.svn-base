@@ -1,0 +1,99 @@
+<!--tabs html-->
+
+<!-- <?php 
+echo $email = $userInfo->email;
+
+?> -->
+
+<?php 
+//	echo '<pre>'; print_r($this->session->all_userdata());exit;
+// 	print_r($this->session->userdata);
+// 	print_r($this->load->library('session'));
+?>
+<nav class="task_tab">
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-12 col-12 col-lg-3 col-xl-2"></div>
+			<div class="col-sm-12 col-12 col-lg-9 col-xl-10">
+				<ul>
+					<li class="hamburger"><a href="javascript:;"><i class="fa fa-bars" aria-hidden="true"></i></a></li>
+					<li><a href="javascript:;">Tasks</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</nav>
+
+<section class="container-fluid p0" >
+	<div class="wrapper">
+		<div class="sidebars" id="sidebar">
+			<div style="position: relative;">
+				<span id="noData"></span>
+				<span id="chartloading"></span>	
+				<canvas id="mychart" style="height: 300px; width: 100%;position: relative;"></canvas>
+			</div>
+			
+			
+			<div class="recent mt30">
+				<h3>Recent Searches</h3>
+				<div id="recentsearchdata"></div>
+				<div id="recentsearchs"></div>
+				<!-- <ul>
+					<li><a href="javascript:;">PO-0000839</a></li>
+					<li><a href="javascript:;">PO-0000839</a></li>
+					<li><a href="javascript:;">PO-0000839</a></li>
+					<li><a href="javascript:;">PO-0000839</a></li>
+				</ul> -->
+			</div>
+		</div>
+	<div class="main_content">
+		<div class="row">
+			<div class="col-12 col-sm-5">
+				<div class="p20 pb0"> 
+					<button class="btn head_btn accpt disabled" id="accept_status_btn" style="display: none;">Accept</button>
+					<button class="btn head_btn reject disabled" id="reject_status_btn" style="display: none;">Reject</button>
+				</div>
+			</div>
+			<div class=" col-sm-3">
+				<div class="p20 pb0"> 
+					<span id="btn_click_without_select" class="output task reject" style="display: none;"></span>
+				</div>
+			</div>
+			<div class="col-sm-4 filter_div">
+				<div class="p20 pb0">
+					<select class="filter" id="filter_id" onchange="getAllTaskList('<?php echo $this->session->userdata('email'); ?>')">
+						<option value="All" selected>All Tasks </option>
+						<option value="Pending">All Pending </option>
+						<option value="Started">All Started</option>
+						<option value="Review">All Review</option>
+						<option value="Change Request">All Change Request</option>
+						<option value="Completed">All Completed</option>
+						<option value="Rejected">All Rejected</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="row" id="mytable">
+			<div class="col-sm-12">
+				<div class="pl-3 pr-3" style="overflow: auto;" id="div_outer_table"> 
+				</div> 
+			</div> 
+		</div>
+	</div>
+</section>
+
+
+<script type="text/javascript">
+
+$(document).ready( function () {
+	$('.hamburger').click(function(){
+		$('#sidebar').toggleClass('active');
+	})
+	
+});
+
+var email = "<?php echo $this->session->userdata('email'); ?>";
+
+</script>
+ <script src="<?php echo base_url(); ?>assets/js/dashboard.js"></script>   
+ <script src="<?php echo base_url(); ?>assets/js/profile.js"></script>   

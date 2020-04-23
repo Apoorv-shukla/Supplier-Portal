@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title><?php echo $pageTitle; ?></title>
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <!-- Bootstrap 3.3.4 -->
+    
+    <link href="<?php echo base_url(); ?>assets/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url(); ?>assets/bower_components/Ionicons/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url(); ?>assets/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url(); ?>assets/dist/css/skins/_all-skins.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" rel="Stylesheet" />
+    <link href="<?php echo base_url(); ?>assets/dist/css/custom.css" rel="stylesheet" type="text/css" />
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
+    <style>
+    	.error{
+    		color:red;
+    		font-weight: normal;
+    	}
+        .inp{
+            display: none;
+        }
+        #profile_data{
+            display:none;
+        }
+        #file{
+            display:none;
+        }
+    </style>
+    <!-- <script src="<?php echo base_url(); ?>assets/bower_components/jquery/dist/jquery.min.js"></script> -->
+    <script type="text/javascript">
+        var baseURL = "<?php echo base_url(); ?>";
+    </script>
+    
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body class="">
+    <?php 
+      if ($this->session->userdata('contact_id') == ''){
+       redirect('login');
+      } 
+    ?>
+    <div class="container-fluid">
+     <!--header html-->
+      <div class="row header">
+        <div class="col-6 col-sm-6 col-lg-4">
+          <img src="<?php echo base_url(); ?>assets/images/logo.png" class="logo">
+        </div>
+        
+        <div class="col-12 col-sm-12 col-lg-4 text-center search_div" style="position: relative;">
+            <input type="text" class="form-control search_input" placeholder="Search by Task Name" id="search_input_data" style="position: relative;" onkeyup="search_input_data()">
+            <i class="fa fa-search search_icon" aria-hidden="true"></i>
+            <div id="search"></div>
+        </div> 
+        <div class="col-6 col-sm-6 col-lg-4 text-right user">
+          <div class="user_login">
+            <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="profileImage()"><img src="<?php echo base_url(); ?>assets/images/user.jpg"/><?php echo $this->session->userdata('name'); ?></a>
+            <div class="dropdown-menu">
+              <a data-toggle="modal" data-target="#profile" class="forgot" href="javascript:;" onclick="profileData()"><i class="fa fa-user-circle"></i> Profile</a>
+              <a href="<?php echo base_url(); ?>logout" class=""><i class="fa fa-sign-out"></i> Sign out</a>
+            </div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+
+  <!-- profile Modal -->
+      <div class="modal fade profile" id="profile" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered profile_modal" role="document">
+          <div class="modal-content">
+                <div class="profile_outer">
+                    <span class="profile_loader"></span>
+                </div>
+            <div class="modal-header text-center">
+                <img src="<?php echo base_url(); ?>assets/images/logo.png">
+              <button type="button" style="margin: 0rem 0rem 0rem 0rem !important;" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal_title">
+                <h4>My Profile</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <p id="success_profile"></p>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4 text-center">
+                        <img id="imagedata" class="user_img">
+                        <div class="glyphicon glyphicon-pencil">
+                            <label for="profile_img" class="edit_img">
+                               <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                            </label>
+                            <input type="file" name="profile_img" id="profile_img">
+                        </div> 
+                        <p id="msg_image_status"></p>
+                        <button type="button" class="change_img btn" id="update_profile_img" >Save</button>
+                    </div>
+
+                    <div class="col-12 col-sm-12 col-md-8 col-lg-8">
+                        <form method="post" id="profileEdit">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Name</label>
+                                        <p class="output" id="name"></p>
+                                        <input type="text" class="inp form-control"  name="name" id="nameE" readonly="true">
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Account Name</label>
+                                        <p class="output" id="account_name"></p>
+                                        <input type="text" name="acc_name" disabled="disabled" class="inp form-control" id="account_nameE">
+                                    </div>
+                                </div>
+                            </div>
+                            <!--<div class="form-group">
+                                <div class="row">
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4">
+                                        <label class="light">Account Name</label>
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-8">
+                                        <p class="" id="account_name"></p>
+                                        <<input type="text" name="acc_name" class="inp form-control" id="account_nameE">
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Email</label>
+                                        <p class="" id="email"></p>
+                                        <!-- <input type="text" name="acc_name" class="inp form-control" id="account_nameE"> -->
+                                    </div>
+
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Communication Language</label>
+                                        <p class="output" id="comm"></p>
+                                        <input type="text" name="comm_lan" class="inp form-control" id="commE">
+                                    </div>
+                                    <!-- <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                    </div> -->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Phone</label>
+                                        <p class="output" id="phone"></p>
+                                        <input type="number" name="phone" class="inp form-control" id="phoneE">
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Mobile</label>
+                                        <p class="output" id="mobile"></p>
+                                        <input type="number" name="mobile" class="inp form-control" id="mobileE">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4">
+                                        <label class="light" >Mobile</label>
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-8">
+                                        <p class="output" id="mobile"></p>
+                                        <input type="text" name="mobile" class="inp form-control" id="mobileE">
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Linkedin URL</label>
+                                        <p class="output" id="l_url"></p>
+                                        <input type="text" name="linked_url" class="inp form-control" id="l_urlE">
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Twitter Name</label>
+                                        <p class="output"  id="t_url"></p>
+                                        <input type="text" name="twitter_url" class="inp form-control" id="t_urlE">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4">
+                                        <label class="light">Twitter URL</label>
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-8">
+                                        <p class="output"  id="t_url"></p>
+                                        <input type="text" name="twitter_url" class="inp form-control" id="t_urlE">
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="form-group">
+                                <div class="row">
+                                    <!-- <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Communication Language</label>
+                                        <p class="output" id="comm"></p>
+                                        <input type="text" name="comm_lan" class="inp form-control" id="commE">
+                                    </div> -->
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Mailing Address Street</label>
+                                        <p class="output" id="m_address_street"></p>
+                                        <input type="text" name="m_address_street" class="inp form-control" id="m_addressE_street">
+                                    </div>
+
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Mailing Address City</label>
+                                        <p class="output" id="m_address_city"></p>
+                                        <input type="text" name="m_address_city" class="inp form-control" id="m_addressE_city">
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4">
+                                        <label class="light">Mailing Address Street</label>
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-8">
+                                        <p class="output" id="m_address_street"></p>
+                                        <input type="text" name="m_address_street" class="inp form-control" id="m_addressE_street">
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="form-group">
+                                <div class="row">
+                                    <!-- <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Mailing Address City</label>
+                                        <p class="output" id="m_address_city"></p>
+                                        <input type="text" name="m_address_city" class="inp form-control" id="m_addressE_city">
+                                    </div> -->
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Mailing Address State</label>
+                                        <p class="output" id="m_address_state"></p>
+                                        <input type="text" name="m_address_state" class="inp form-control" id="m_addressE_state">
+                                    </div>
+
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Mailing Address Country</label>
+                                        <p class="output" id="m_address_country"></p>
+                                        <input type="text" name="m_address_country" class="inp form-control" id="m_addressE_country">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4">
+                                        <label class="light">Mailing Address State</label>
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-8">
+                                        <p class="output" id="m_address_state"></p>
+                                        <input type="text" name="m_address_state" class="inp form-control" id="m_addressE_state">
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="light">Mailing Address Postal Code</label>
+                                        <p class="output" id="m_address_code"></p>
+                                        <input type="text" name="m_address_code" class="inp form-control" id="m_addressE_code">
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-12 text-right">
+                                        <button class="edit_profile btn" type="button" id="edit" onclick="profileEdit()">Edit</button>
+                                        <button class="edit_profile btn" type="button"  name="submit" id="profile_data">Update</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4">
+                                        <label class="light">Mailing Address Postal Code</label>
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-8">
+                                    </div>
+                                </div>
+                            </div> -->
+                            <!-- <div class="form-group">
+                                <div class="row">
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-12 text-right">
+                                        <button class="edit_profile btn" type="button" id="edit" onclick="profileEdit()">Edit</button>
+                                         <button class="edit_profile btn" type="button"  name="submit" id="profile_data">Update</button>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </form>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>  
+      <!-- profile Modal ends-->

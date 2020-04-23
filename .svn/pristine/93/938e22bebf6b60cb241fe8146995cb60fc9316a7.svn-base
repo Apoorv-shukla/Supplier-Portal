@@ -1,0 +1,147 @@
+//profile DATA 
+function profileData(){
+   $("p.output").show();
+    $("input.inp").hide();
+    $("#edit").show();
+  $("#profile_data").hide();
+  $('.profile_outer').addClass('show');
+  $(".profile_loader").addClass('show');
+  // return false;
+  $.ajax({
+  url: base_url+'/profileData',
+  method: 'post',
+  success: function(response) {
+      var res = JSON.parse(response);
+            $('.profile_outer').removeClass('show');
+            $(".profile_loader").removeClass('show');
+            if (res.st === parseInt(1)) {
+               $(res.profile_data.records).each(function(key,value){
+
+                $('#name').text(value.Name);
+                $('#phone').text(value.Phone);
+                $('#email').text(value.Email);
+                $('#mobile').text(value.MobilePhone);
+                $('#account_name').text(value.Account.Name);
+                $('#l_url').text(value.Linkedin_URL__c);
+                $('#t_url').text(value.Twitter_Name__c);
+                $('#comm').text(value.Communication_Language__c);
+                
+
+                if(value.MailingAddress != null){
+                  $('#m_address_street').text(value.MailingAddress.street);
+                  $('#m_address_city').text(value.MailingAddress.city);
+                $('#m_address_state').text(value.MailingAddress.state);
+                $('#m_address_country').text(value.MailingAddress.country);
+                $('#m_address_code').text(value.MailingAddress.postalCode);
+                }
+                
+                $('#nameE').val(value.Name);
+                $('#phoneE').val(value.Phone);
+                $('#mobileE').val(value.MobilePhone);
+                $('#account_nameE').val(value.Account.Name);
+                $('#l_urlE').val(value.Linkedin_URL__c);
+                $('#t_urlE').val(value.Twitter_Name__c);
+                $('#commE').val(value.Communication_Language__c);
+                if(value.MailingAddress != null){
+                  $('#m_addressE_street').val(value.MailingAddress.street);
+                  $('#m_addressE_city').val(value.MailingAddress.city);
+                  $('#m_addressE_state').val(value.MailingAddress.state);
+                  $('#m_addressE_country').val(value.MailingAddress.country);
+                  $('#m_addressE_code').val(value.MailingAddress.postalCode);
+                 }
+                 }); 
+            }
+          }
+
+        });
+}
+
+function profileEdit(){
+        $("p.output").hide();
+        $("#edit").hide();
+        $("input.inp").show();
+        $("#profile_data").show();
+}
+
+
+$("#profile_data").click(function(){
+  // $("p.output").show();
+  // $("#edit").show();
+  // $("#profile_data").hide();
+  // $("input.inp").hide();
+  $('.profile_outer').addClass('show');
+  $(".profile_loader").addClass('show');
+  console.log('update click loader')
+  $.ajax({
+  url: base_url+'/profileDatasubmit',
+  method: 'post',
+  data: $("#profileEdit").serialize(),
+  success: function(response) {
+      var res = JSON.parse(response);
+      if (res.profile_updata === parseInt(204)) {
+        $('.profile_outer').removeClass('show');
+        $(".profile_loader").removeClass('show');
+        $('#success_profile').html('UPDATE SUCCESSFULLY');
+        $('#success_profile').addClass('alert alert-success');
+        $('#success_profile').css({"width": "100%"});
+      } else { 
+        $('.profile_outer').removeClass('show');
+        $(".profile_loader").removeClass('show');
+        $('#success_profile').html('ERROR SOMETHING WENT WRONG');
+        $('#success_profile').addClass('alert alert-danger');
+        $('#success_profile').css({"width": "100%"});
+      }
+    }
+  });
+})
+
+$(".close").click(function(){
+    // $("#forgetPassword_form")[0].reset();
+    $("#success_profile").html('');
+    $('#success_profile').removeClass('alert alert-success');
+    // $('#success_profile').css({"width": "100%"});
+});
+
+function profileImage(){
+   // alert('jai');
+  $.ajax({
+  url: base_url+'profileImage',
+  method: 'post',
+  success: function(response) {
+      var res = JSON.parse(response);
+            if (res.st === parseInt(1)) {
+              $("#imagedata").attr("src", res.image_url);
+             
+            }
+          }
+
+        });
+}
+
+$("#update_profile_img").click(function(){
+  var fd = new FormData();
+  fd.append('profile_img', $('#profile_img').get(0).files[0]);
+  $.ajax({
+  url: base_url+'updateProfileImg',
+  method: 'post',
+  data: fd,
+  contentType: false,
+  processData: false,
+  success: function(response) {
+      var res = JSON.parse(response);
+            if (res.st === parseInt(1)) {
+              $("#imagedata").attr("src", res.image_url);
+              $('#msg_image_status').text(res.msg);
+              $('#msg_image_status').removeClass('profile_image_error');
+              $('#msg_image_status').addClass('profile_image_status');
+              $("#msg_image_status").delay(2000).fadeOut();
+            }
+            else if (res.st === parseInt(0)) {
+              $('#msg_image_status').text(res.msg);
+               $('#msg_image_status').removeClass('profile_image_status');
+              $('#msg_image_status').addClass('profile_image_error');
+              $("#msg_image_status").delay(2000).fadeOut();
+            }
+         }
+      });
+});
